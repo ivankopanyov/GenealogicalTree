@@ -1,12 +1,16 @@
 package models;
 
+import models.abstractions.IGendered;
+import models.abstractions.ITreeNode;
+
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * Класс, описывающий узел генеалогичского дерева.
+ * @param <T> Тип объекта, хранящегося в узле.
  */
-public class GenealogicalTreeNode {
+public class GenealogicalTreeNode<T extends IGendered> implements ITreeNode<T> {
 
     /**
      * Идетификатор узла.
@@ -16,38 +20,38 @@ public class GenealogicalTreeNode {
     /**
      * Объект генеалогического дерева, к которому принадлежит узел.
      */
-    private final GenealogicalTree genealogicalTree;
+    private final GenealogicalTree<T> genealogicalTree;
 
     /**
-     * Объект человека, хранящийся в узле.
+     * Объект, хранящийся в узле.
      */
-    private final Person person;
+    private final T value;
 
     /**
      * Узел, хранящий объект отца.
      */
-    private GenealogicalTreeNode father;
+    private GenealogicalTreeNode<T> father;
 
     /**
      * Узел, хранящий объект матери.
      */
-    private GenealogicalTreeNode mother;
+    private GenealogicalTreeNode<T> mother;
 
     /**
      * Сэт, хранящий узлы с объектами детей.
      */
-    private final Set<GenealogicalTreeNode> children;
+    private final Set<GenealogicalTreeNode<T>> children;
 
     /**
      * Инициализация узла.
      * @param id Идентификатор узла.
      * @param genealogicalTree Объект генеалогического дерева, к которому относится узел.
-     * @param person Объект человека, хранящийся в узле.
+     * @param value Объект, хранящийся в узле.
      */
-    GenealogicalTreeNode(int id, GenealogicalTree genealogicalTree, Person person) {
+    GenealogicalTreeNode(int id, GenealogicalTree<T> genealogicalTree, T value) {
         this.id = id;
         this.genealogicalTree = genealogicalTree;
-        this.person = person;
+        this.value = value;
         children = new HashSet<>();
     }
 
@@ -55,14 +59,14 @@ public class GenealogicalTreeNode {
      * Инициализация узла.
      * @param id Идентификатор узла.
      * @param genealogicalTree Объект генеалогического дерева, к которому относится узел.
-     * @param person Объект человека, хранящийся в узле.
+     * @param value Объект, хранящийся в узле.
      * @param father Узел, хранящий объект отца.
      * @param mother Узел, хранящий объект матери.
      */
-    GenealogicalTreeNode(int id, GenealogicalTree genealogicalTree, Person person,
-                         GenealogicalTreeNode father, GenealogicalTreeNode mother) {
+    GenealogicalTreeNode(int id, GenealogicalTree<T> genealogicalTree, T value,
+                         GenealogicalTreeNode<T> father, GenealogicalTreeNode<T> mother) {
 
-        this(id, genealogicalTree, person);
+        this(id, genealogicalTree, value);
         this.father = father;
         this.mother = mother;
     }
@@ -79,31 +83,48 @@ public class GenealogicalTreeNode {
      * Метод, возвращающий объект генеалогического дерева, к которому относится узел.
      * @return Объект генеалогического дерева, к которому относится узел.
      */
-    public GenealogicalTree getGenealogicalTree() {
+    public GenealogicalTree<T> getTree() {
         return genealogicalTree;
     }
 
     /**
-     * Метод, возвращающий объект человека, хранящегося в узле.
-     * @return Объект человека, хранящегося в узле.
+     * Метод, возвращающий объект, хранящийся в узле.
+     * @return Объект, хранящийся в узле.
      */
-    public Person getPerson() {
-        return person;
+    public T getValue() {
+        return value;
     }
 
     /**
      * Метод, возвращающий узел, хранящий объект отца.
      * @return Узел, хранящий объект отца.
      */
-    public GenealogicalTreeNode getFather() {
-        return father;
+    public GenealogicalTreeNode<T> getFather() {
+        return getLeft();
     }
 
     /**
      * Метод, возвращающий узел, хранящий объект матери.
      * @return Узел, хранящий объект матери.
      */
-    public GenealogicalTreeNode getMother() {
+    public GenealogicalTreeNode<T> getMother() {
+        return getRight();
+    }
+
+    /**
+     * Метод, возвращающий левый узел.
+     * @return Левый узел.
+     */
+    public GenealogicalTreeNode<T> getLeft() {
+        return father;
+    }
+
+
+    /**
+     * Метод, возвращающий правый узел.
+     * @return Правый узел.
+     */
+    public GenealogicalTreeNode<T> getRight() {
         return mother;
     }
 
@@ -111,7 +132,7 @@ public class GenealogicalTreeNode {
      * Метод добавления объекта ребенка.
      * @param child Узел, хранящий объект ребенка.
      */
-    void addChild(GenealogicalTreeNode child) {
+    void addChild(GenealogicalTreeNode<T> child) {
         children.add(child);
     }
 
@@ -119,20 +140,20 @@ public class GenealogicalTreeNode {
      * Метод, возвращающий массив узлов, хранящих объекты детей.
      * @return Массив узлов, хранящих объекты детей.
      */
-    public GenealogicalTreeNode[] getChildren() {
-        GenealogicalTreeNode[] children = new GenealogicalTreeNode[this.children.size()];
+    public GenealogicalTreeNode<T>[] getChildren() {
+        GenealogicalTreeNode<T>[] children = new GenealogicalTreeNode[this.children.size()];
         int i = 0;
-        for (GenealogicalTreeNode node: this.children)
+        for (GenealogicalTreeNode<T> node: this.children)
             children[i++] = node;
         return children;
     }
 
     /**
      * Переопределения метода перобразования объекта узла в строку.
-     * @return Строка, содержащая имя объекта человека, хранящегося в узле, и идентификатор узла.
+     * @return Строка, содержащая объект, хранящийся в узле, и идентификатор узла.
      */
     @Override
     public String toString() {
-        return person.toString() + '(' + id + ')';
+        return value.toString() + '(' + id + ')';
     }
 }

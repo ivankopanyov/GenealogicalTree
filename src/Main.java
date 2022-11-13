@@ -1,4 +1,5 @@
 import controllers.GenealogicalTreeController;
+import models.Person;
 import repositories.GenealogicalTreeRepository;
 import views.MainView;
 
@@ -10,8 +11,8 @@ public class Main {
      * Точка входа в приложение.
      */
     public static void main(String[] args) throws IOException {
-        GenealogicalTreeRepository repository = new GenealogicalTreeRepository();
-        GenealogicalTreeController controller = new GenealogicalTreeController(repository);
+        GenealogicalTreeRepository<Person> repository = new GenealogicalTreeRepository<>();
+        GenealogicalTreeController<Person> controller = new GenealogicalTreeController<>(repository);
         MainView view = new MainView(controller);
         view.start();
     }

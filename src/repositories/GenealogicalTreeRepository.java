@@ -1,19 +1,21 @@
 package repositories;
 
 import models.GenealogicalTree;
+import models.abstractions.IGendered;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Класс, описывающий репозиторий для хранения объектов генеалогических деревьев.
+ * @param <T> Тип объектов, хранящихся в генеалогических деревьях.
  */
-public class GenealogicalTreeRepository implements IGenealogicalTreeRepository {
+public class GenealogicalTreeRepository<T extends IGendered> implements IGenealogicalTreeRepository<T> {
 
     /**
      * Список для хранения объектов генеалогических деревьев.
      */
-    private List<GenealogicalTree> genealogicalTrees;
+    private final List<GenealogicalTree<T>> genealogicalTrees;
 
     /**
      * Инициализация объекта репозитория.
@@ -27,7 +29,7 @@ public class GenealogicalTreeRepository implements IGenealogicalTreeRepository {
      * @param entity Объект генеалогического дерева.
      */
     @Override
-    public void add(GenealogicalTree entity) {
+    public void add(GenealogicalTree<T> entity) {
         if (entity == null)
             return;
 
@@ -40,7 +42,7 @@ public class GenealogicalTreeRepository implements IGenealogicalTreeRepository {
      * @return Возвращаемый объект.
      */
     @Override
-    public GenealogicalTree get(int id) {
+    public GenealogicalTree<T> get(int id) {
         if (id < 0 || id >= genealogicalTrees.size())
             return null;
 
@@ -52,7 +54,7 @@ public class GenealogicalTreeRepository implements IGenealogicalTreeRepository {
      * @return Список всех генеалогических деревьев.
      */
     @Override
-    public List<GenealogicalTree> getAll() {
+    public List<GenealogicalTree<T>> getAll() {
         return new ArrayList<>(genealogicalTrees);
     }
 

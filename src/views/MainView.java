@@ -16,7 +16,7 @@ public class MainView {
     /**
      * Объект контроллера генеалогического дерева.
      */
-    private final GenealogicalTreeController genealogicalTreeController;
+    private final GenealogicalTreeController<Person> genealogicalTreeController;
 
     /**
      * Объект ридера для ввода данных в консоли.
@@ -28,7 +28,7 @@ public class MainView {
      * @param genealogicalTreeController Экземпляр контроллера для взаимодействия с экземплярами генеалгических деревьев.
      * @throws IllegalArgumentException Возбуждается, если передан неинициализированный параметр.
      */
-    public MainView(GenealogicalTreeController genealogicalTreeController) throws IllegalArgumentException {
+    public MainView(GenealogicalTreeController<Person> genealogicalTreeController) throws IllegalArgumentException {
         if (genealogicalTreeController == null)
             throw new IllegalArgumentException("Переданный параметр неинициализтрован.");
 
@@ -48,7 +48,7 @@ public class MainView {
      */
     private void genealogicalTreeList() throws IOException {
         while (true) {
-            List<GenealogicalTree> genealogicalTrees = genealogicalTreeController.getAll();
+            List<GenealogicalTree<Person>> genealogicalTrees = genealogicalTreeController.getAll();
             String[] items;
 
             if (genealogicalTrees.size() == 0) {
@@ -80,7 +80,7 @@ public class MainView {
         Person person = createPerson("Укажите имя и фамилию самого дальнего предка: ");
         if (person == null)
             return;
-        GenealogicalTree genealogicalTree = new GenealogicalTree(name, person);
+        GenealogicalTree<Person> genealogicalTree = new GenealogicalTree<>(name, person);
         genealogicalTreeController.add(genealogicalTree);
     }
 
@@ -104,7 +104,7 @@ public class MainView {
                     break;
                 case 1:
                     System.out.println();
-                    GenealogicalTree genealogicalTree = genealogicalTreeController.get(id);
+                    GenealogicalTree<Person> genealogicalTree = genealogicalTreeController.get(id);
                     System.out.println(genealogicalTreeController.getAllTree(genealogicalTree));
                     break;
                 case 2:
@@ -120,25 +120,25 @@ public class MainView {
      */
     private void addPerson(int id) throws IOException {
         Person person = createPerson("Укажите имя и фамилию нового человека: ");
-        GenealogicalTree genealogicalTree = genealogicalTreeController.get(id);
+        GenealogicalTree<Person> genealogicalTree = genealogicalTreeController.get(id);
         int number = inputNumber("Укажите ID отца или матери: ");
-        GenealogicalTreeNode parent = genealogicalTreeController.getPerson(genealogicalTree, number);
+        GenealogicalTreeNode<Person> parent = genealogicalTreeController.get(genealogicalTree, number);
         if (parent == null) {
             System.out.println("Человек с указанным ID не найден.");
             return;
         }
-        String parentGender = parent.getPerson().getGender() == Gender.male ? "матери" : "отца";
+        String parentGender = parent.getValue().getGender() == Gender.male ? "матери" : "отца";
         System.out.print("Укажите ID или имя и фамилию " + parentGender + ": ");
         String input = reader.readLine();
         if (IsNumber(input)) {
-            GenealogicalTreeNode father;
-            GenealogicalTreeNode mother;
+            GenealogicalTreeNode<Person> father;
+            GenealogicalTreeNode<Person> mother;
 
-            if (parent.getPerson().getGender() == Gender.male) {
+            if (parent.getValue().getGender() == Gender.male) {
                 father = parent;
-                mother = genealogicalTreeController.getPerson(genealogicalTree, Integer.parseInt(input));
+                mother = genealogicalTreeController.get(genealogicalTree, Integer.parseInt(input));
             } else {
-                father = genealogicalTreeController.getPerson(genealogicalTree, Integer.parseInt(input));
+                father = genealogicalTreeController.get(genealogicalTree, Integer.parseInt(input));
                 mother = parent;
             }
 
@@ -148,7 +148,7 @@ public class MainView {
             }
 
             try {
-                genealogicalTreeController.addPerson(genealogicalTree, person, father, mother);
+                genealogicalTreeController.add(genealogicalTree, person, father, mother);
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
             }
@@ -156,10 +156,10 @@ public class MainView {
             return;
         }
 
-        if (parent.getPerson().getGender() == Gender.male)
-            genealogicalTreeController.addPerson(genealogicalTree, person, parent, new Female(input));
+        if (parent.getValue().getGender() == Gender.male)
+            genealogicalTreeController.add(genealogicalTree, person, parent, new Female(input));
         else
-            genealogicalTreeController.addPerson(genealogicalTree, person, new Male(input), parent);
+            genealogicalTreeController.add(genealogicalTree, person, new Male(input), parent);
     }
 
     /**

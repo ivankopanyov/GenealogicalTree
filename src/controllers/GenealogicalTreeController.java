@@ -1,25 +1,27 @@
 package controllers;
 
 import models.*;
+import models.abstractions.IGendered;
 import repositories.IGenealogicalTreeRepository;
 
 import java.util.List;
 
 /**
  * Класс, описывающий контроллер для взаимодействия с генеалогическими деревьями.
+ * @param <T> Тип объектов, хранящихся в генеалогических деревьях.
  */
-public class GenealogicalTreeController {
+public class GenealogicalTreeController<T extends IGendered> {
 
     /**
      * Объект репозитория, хранящего экземпляры генеалогичских деревьев.
      */
-    private final IGenealogicalTreeRepository genealogicalTreeRepository;
+    private final IGenealogicalTreeRepository<T> genealogicalTreeRepository;
 
     /**
      * Инициализация объекта контроллера.
      * @param genealogicalTreeRepository Объект репозитория.
      */
-    public GenealogicalTreeController(IGenealogicalTreeRepository genealogicalTreeRepository) {
+    public GenealogicalTreeController(IGenealogicalTreeRepository<T> genealogicalTreeRepository) {
         if (genealogicalTreeRepository == null)
             throw new IllegalArgumentException("Переданный параметр неинициализтрован.");
 
@@ -30,7 +32,7 @@ public class GenealogicalTreeController {
      * Метод добавления объекта генеалогического дерева.
      * @param genealogicalTree Объект генеалогического дерева.
      */
-    public void add(GenealogicalTree genealogicalTree) {
+    public void add(GenealogicalTree<T> genealogicalTree) {
         if (genealogicalTree == null)
             return;
 
@@ -42,7 +44,7 @@ public class GenealogicalTreeController {
      * @param id Идентификатор дерева.
      * @return Объект геналогического дерева.
      */
-    public GenealogicalTree get(int id) {
+    public GenealogicalTree<T> get(int id) {
         return genealogicalTreeRepository.get(id);
     }
 
@@ -50,7 +52,7 @@ public class GenealogicalTreeController {
      * Метод получения списка всех генеалогических деревьев.
      * @return Список всех генеалогических деревьев.
      */
-    public List<GenealogicalTree> getAll() {
+    public List<GenealogicalTree<T>> getAll() {
         return genealogicalTreeRepository.getAll();
     }
 
@@ -63,60 +65,60 @@ public class GenealogicalTreeController {
     }
 
     /**
-     * Метод добавления человека в генеалогическое дерево.
+     * Метод добавления объекта в генеалогическое дерево.
      * @param genealogicalTree Объект генеалогического дерева.
-     * @param person Объект человека для добавления.
+     * @param value Объект для добавления.
      * @param father Узел дерева, содержащий объект отца.
      * @param mother Узел дерева, содержащий объект матери.
-     * @return Узел дерева, содержащий объект добавленного человека.
+     * @return Узел дерева, содержащий добавленный объект.
      * @throws IllegalArgumentException Возбуждается, если параметр не инициализирован.
      */
-    public GenealogicalTreeNode addPerson(GenealogicalTree genealogicalTree, Person person,
-                                          GenealogicalTreeNode father, GenealogicalTreeNode mother)
+    public GenealogicalTreeNode<T> add(GenealogicalTree<T> genealogicalTree, T value,
+                                          GenealogicalTreeNode<T> father, GenealogicalTreeNode<T> mother)
             throws IllegalArgumentException {
 
         if (genealogicalTree == null)
             throw new IllegalArgumentException("Переданный параметр неинициализтрован.");
 
-        return genealogicalTree.addPerson(person, father, mother);
+        return genealogicalTree.add(value, father, mother);
     }
 
     /**
-     * Метод добавления человека в генеалогическое дерево.
+     * Метод добавления объекта в генеалогическое дерево.
      * @param genealogicalTree Объект генеалогического дерева.
-     * @param person Объект человека для добавления.
+     * @param value Объект для добавления.
      * @param father Узел дерева, содержащий объект отца.
      * @param mother Объект матери, с которым будет создан новый узел.
-     * @return Узел дерева, содержащий объект добавленного человека.
+     * @return Узел дерева, содержащий добавленный объект.
      * @throws IllegalArgumentException Возбуждается, если параметр не инициализирован.
      */
-    public GenealogicalTreeNode addPerson(GenealogicalTree genealogicalTree, Person person,
-                                          GenealogicalTreeNode father, Female mother)
+    public GenealogicalTreeNode<T> add(GenealogicalTree<T> genealogicalTree, T value,
+                                          GenealogicalTreeNode<T> father, T mother)
             throws IllegalArgumentException {
 
         if (genealogicalTree == null)
             throw new IllegalArgumentException("Переданный параметр неинициализтрован.");
 
-        return genealogicalTree.addPerson(person, father, mother);
+        return genealogicalTree.add(value, father, mother);
     }
 
     /**
-     * Метод добавления человека в генеалогическое дерево.
+     * Метод добавления объекта в генеалогическое дерево.
      * @param genealogicalTree Объект генеалогического дерева.
-     * @param person Объект человека для добавления.
+     * @param value Объект для добавления.
      * @param father Объект отца, с которым будет создан новый узел.
      * @param mother Узел дерева, содержащий объект матери.
-     * @return Узел дерева, содержащий объект добавленного человека.
+     * @return Узел дерева, содержащий добавленный объект.
      * @throws IllegalArgumentException Возбуждается, если параметр не инициализирован.
      */
-    public GenealogicalTreeNode addPerson(GenealogicalTree genealogicalTree, Person person,
-                                          Male father, GenealogicalTreeNode mother)
+    public GenealogicalTreeNode<T> add(GenealogicalTree<T> genealogicalTree, T value,
+                                          T father, GenealogicalTreeNode<T> mother)
             throws IllegalArgumentException {
 
         if (genealogicalTree == null)
             throw new IllegalArgumentException("Переданный параметр неинициализтрован.");
 
-        return genealogicalTree.addPerson(person, father, mother);
+        return genealogicalTree.add(value, father, mother);
     }
 
     /**
@@ -126,7 +128,7 @@ public class GenealogicalTreeController {
      * @return Узел генеалогического дерева.
      * @throws IllegalArgumentException Возбуждается, если параметр не инициализирован.
      */
-    public GenealogicalTreeNode getPerson(GenealogicalTree genealogicalTree, int id)
+    public GenealogicalTreeNode<T> get(GenealogicalTree<T> genealogicalTree, int id)
             throws IllegalArgumentException {
 
         if (genealogicalTree == null)
@@ -141,7 +143,7 @@ public class GenealogicalTreeController {
      * @return Строка со всеми узлами дерева.
      * @throws IllegalArgumentException Возбуждается, если параметр не инициализирован.
      */
-    public String getAllTree(GenealogicalTree genealogicalTree) throws IllegalArgumentException {
+    public String getAllTree(GenealogicalTree<T> genealogicalTree) throws IllegalArgumentException {
         if (genealogicalTree == null)
             throw new IllegalArgumentException("Переданный параметр неинициализтрован.");
 
@@ -152,28 +154,28 @@ public class GenealogicalTreeController {
 
     /**
      * Метод обхода дерева в глубину для записи в строку.
-     * @param person Текущий узел.
+     * @param node Текущий узел.
      * @param builder Объект StringBuilder для записи узлов.
      * @param indent Отступ.
      * @param last Является ли узел последним в текущем списке.
      */
-    private void dfsGenealogicalTree(GenealogicalTreeNode person, StringBuilder builder, String indent, boolean last) {
+    private void dfsGenealogicalTree(GenealogicalTreeNode<T> node, StringBuilder builder, String indent, boolean last) {
         builder.append(indent)
                 .append(last ? '└' : '├')
                 .append('─')
-                .append(person);
+                .append(node);
 
-        GenealogicalTreeNode[] children = person.getChildren();
+        GenealogicalTreeNode<T>[] children = node.getChildren();
         if (children.length == 0)
             return;
 
         builder.append(" & ");
 
-        GenealogicalTreeNode spouse = person.getPerson().getGender() == Gender.male
+        GenealogicalTreeNode<T> spouse = node.getValue().getGender() == Gender.male
                 ? children[0].getMother() : children[0].getFather();
         builder.append(spouse);
 
-        for (GenealogicalTreeNode child: children) {
+        for (GenealogicalTreeNode<T> child: children) {
             builder.append('\n');
             dfsGenealogicalTree(child, builder, indent + (last ? "  " : "│ "), child == children[children.length - 1]);
         }

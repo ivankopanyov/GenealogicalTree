@@ -1,4 +1,6 @@
-package models;
+package models.abstractions;
+
+import models.Gender;
 
 /**
  * Объект, имеющий пол.
@@ -9,5 +11,5 @@ public interface IGendered {
      * Метод, возвращающий пол объекта.
      * @return Пол объекта.
      */
-    public Gender getGender();
+    Gender getGender();
 }

@@ -1,5 +1,8 @@
 package models;
 
+import models.abstractions.IGendered;
+import models.abstractions.INamed;
+
 /**
  * Класс, описывающий человека.
  */
